@@ -83,7 +83,8 @@ const ResultsTable = ({ results, title = "Classification Results" }) => {
                 <th className="text-left py-4 px-5 text-sm font-bold text-gray-300 uppercase tracking-wider">Priority</th>
                 <th className="text-left py-4 px-5 text-sm font-bold text-gray-300 uppercase tracking-wider">Department</th>
                 <th className="text-left py-4 px-5 text-sm font-bold text-gray-300 uppercase tracking-wider">Confidence</th>
-                <th className="text-left py-4 px-5 text-sm font-bold text-gray-300 uppercase tracking-wider">Actions</th>
+                <th className="text-left py-4 px-5 text-sm font-bold text-gray-300 uppercase tracking-wider">Action</th>
+                <th className="text-left py-4 px-5 text-sm font-bold text-gray-300 uppercase tracking-wider">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -134,6 +135,13 @@ const ResultsTable = ({ results, title = "Classification Results" }) => {
                       )}
                     </td>
                     <td className="py-4 px-5">
+                      {result.action ? (
+                        <span className="text-sm text-gray-300 font-medium">{result.action}</span>
+                      ) : (
+                        <span className="text-sm text-gray-500">-</span>
+                      )}
+                    </td>
+                    <td className="py-4 px-5">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -164,6 +172,7 @@ const ResultsTable = ({ results, title = "Classification Results" }) => {
                             category={result.category}
                             priority={result.priority}
                             confidence={result.confidence}
+                            action={result.action}
                           />
                         </div>
                       </td>

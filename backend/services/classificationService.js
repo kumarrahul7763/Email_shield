@@ -32,6 +32,32 @@ const DEPARTMENT_MAP = {
 };
 
 /**
+ * Get suggested action based on category and priority
+ * @param {string} category - Email category
+ * @param {string} priority - Email priority
+ * @returns {string} Suggested action
+ */
+const getAction = (category, priority) => {
+  // Special case: Technical Support + High priority
+  if (category === 'Technical' && priority === 'High') {
+    return 'URGENT: Escalate to Senior IT Team';
+  }
+
+  // Action mapping based on category
+  const actionMap = {
+    'Technical': 'Assign to IT Support Team',
+    'Finance': 'Forward to Billing Department',
+    'HR': 'Send to HR Team',
+    'Spam': 'Ignore / Delete Email',
+    'Promotional / Marketing': 'Archive Email',
+    'General': 'Keep in Inbox',
+    'Support': 'Assign to Customer Service Team'
+  };
+
+  return actionMap[category] || 'Keep in Inbox';
+};
+
+/**
  * Classify a single email using Gemini API with fallback to Hugging Face and rule-based logic
  * @param {string} emailText - The email text to classify
  * @returns {Object} Classification result with category, priority, department, explanation, reply, and model_used
@@ -82,6 +108,7 @@ export const classifyEmailsBulk = async (emails) => {
         department: 'General',
         explanation: 'Unable to classify this email due to an error.',
         reply: 'Unable to classify',
+        action: 'Keep in Inbox',
         originalEmail: email.text || email.content || email.body || '',
         id: email.id || results.length + 1,
         model_used: 'Error',
@@ -186,6 +213,9 @@ Email: ${text}`;
     // Generate reply based on category and priority
     const reply = generateReply(parsed.category, parsed.priority);
 
+    // Get suggested action
+    const action = getAction(parsed.category, parsed.priority);
+
     return {
       category: parsed.category,
       priority: parsed.priority,
@@ -193,6 +223,7 @@ Email: ${text}`;
       confidence: parseInt(parsed.confidence, 10) || 85,
       explanation: parsed.explanation,
       reply,
+      action,
       model_used: 'Groq (llama3-8b-8192)'
     };
   } catch (error) {
@@ -271,6 +302,9 @@ const classifyWithHuggingFace = async (text) => {
   // Generate reply
   const reply = generateReply(category, priority);
 
+  // Get suggested action
+  const action = getAction(category, priority);
+
   return {
     category,
     priority,
@@ -278,6 +312,7 @@ const classifyWithHuggingFace = async (text) => {
     confidence: Math.round(confidence * 100),
     explanation,
     reply,
+    action,
     model_used: 'Hugging Face'
   };
 };
@@ -337,6 +372,9 @@ const classifyWithRules = (text) => {
   // Generate reply
   const reply = generateReply(category, priority);
 
+  // Get suggested action
+  const action = getAction(category, priority);
+
   return {
     category,
     priority,
@@ -344,6 +382,7 @@ const classifyWithRules = (text) => {
     confidence: 85, // Default confidence for rule-based
     explanation,
     reply,
+    action,
     model_used: 'Rule-based'
   };
 };
