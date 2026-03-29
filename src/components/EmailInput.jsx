@@ -75,24 +75,26 @@ const EmailInput = ({ onResult, onError }) => {
 
   return (
     <div className="card-gradient animate-fade-in">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-lg opacity-30"></div>
-          <div className="relative p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-500 rounded-2xl shadow-lg">
-            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 md:mb-6">
+        <div className="flex items-center gap-3 sm:gap-4 flex-1">
+          <div className="relative flex-shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-lg opacity-30"></div>
+            <div className="relative p-2.5 md:p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-500 rounded-2xl shadow-lg">
+              <svg className="w-5 h-5 md:w-7 md:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
           </div>
-        </div>
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold text-gray-200">Analyze Single Email</h2>
-          <p className="text-gray-400 mt-1">Paste your email content to classify and prioritize</p>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-200">Analyze Single Email</h2>
+            <p className="text-gray-400 mt-0.5 md:mt-1 text-sm md:text-base">Paste your email content to classify and prioritize</p>
+          </div>
         </div>
         
         {/* Backend Status Indicator */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {backendStatus.checked && (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
+            <div className={`flex items-center gap-2 px-2.5 md:px-3 py-1.5 rounded-full text-xs font-semibold ${
               backendStatus.running 
                 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
                 : 'bg-red-500/20 text-red-400 border border-red-500/30'
@@ -100,7 +102,8 @@ const EmailInput = ({ onResult, onError }) => {
               <span className={`w-2 h-2 rounded-full ${
                 backendStatus.running ? 'bg-emerald-500' : 'bg-red-500'
               }`}></span>
-              {backendStatus.running ? 'Backend Online' : 'Backend Offline'}
+              <span className="hidden xs:inline">{backendStatus.running ? 'Backend Online' : 'Backend Offline'}</span>
+              <span className="xs:hidden">{backendStatus.running ? 'Online' : 'Offline'}</span>
             </div>
           )}
           <button
@@ -117,7 +120,7 @@ const EmailInput = ({ onResult, onError }) => {
 
       {/* Backend offline warning */}
       {backendStatus.checked && !backendStatus.running && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 border-2 border-red-500/30 rounded-2xl backdrop-blur-sm">
+        <div className="mb-4 md:mb-6 p-3 md:p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 border-2 border-red-500/30 rounded-2xl backdrop-blur-sm">
           <div className="flex items-start gap-3">
             <div className="p-2 bg-red-500/20 rounded-xl flex-shrink-0">
               <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,9 +144,9 @@ const EmailInput = ({ onResult, onError }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
         <div>
-          <label htmlFor="email-text" className="block text-sm font-semibold text-gray-300 mb-3">
+          <label htmlFor="email-text" className="block text-sm font-semibold text-gray-300 mb-2 md:mb-3">
             Email Content
           </label>
           <textarea
@@ -153,20 +156,20 @@ const EmailInput = ({ onResult, onError }) => {
             placeholder="Paste your email content here...
 
 Example: Urgent: Please review the attached invoice for Q4 2024. Payment is due immediately."
-            className="input-field min-h-[220px] resize-y"
+            className="input-field min-h-[180px] md:min-h-[220px] resize-y"
             disabled={isLoading}
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-3 md:gap-4">
           <button
             type="submit"
             disabled={isLoading || !emailText.trim() || !backendStatus.running}
-            className="btn-primary flex-1 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="btn-primary flex-1 flex items-center justify-center gap-2 md:gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm md:text-base"
           >
             {isLoading ? (
               <>
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <svg className="animate-spin h-4 w-4 md:h-5 md:w-5" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
@@ -174,7 +177,7 @@ Example: Urgent: Please review the attached invoice for Q4 2024. Payment is due 
               </>
             ) : (
               <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 Analyze Email
@@ -188,7 +191,7 @@ Example: Urgent: Please review the attached invoice for Q4 2024. Payment is due 
             disabled={isLoading || !emailText}
             className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
@@ -196,14 +199,14 @@ Example: Urgent: Please review the attached invoice for Q4 2024. Payment is due 
       </form>
 
       {/* Quick tips */}
-      <div className="mt-8 p-5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/20 backdrop-blur-sm">
-        <h3 className="text-sm font-bold text-purple-300 mb-3 flex items-center gap-2">
+      <div className="mt-6 md:mt-8 p-4 md:p-5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/20 backdrop-blur-sm">
+        <h3 className="text-sm font-bold text-purple-300 mb-2 md:mb-3 flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
           Quick Tips
         </h3>
-        <ul className="text-sm text-purple-200 space-y-2">
+        <ul className="text-sm text-purple-200 space-y-1.5 md:space-y-2">
           <li className="flex items-start gap-2">
             <span className="text-purple-400 mt-0.5">•</span>
             Include the full email content for better accuracy

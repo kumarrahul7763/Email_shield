@@ -18,6 +18,7 @@ function App() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [activeTab, setActiveTab] = useState('classify');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   /**
    * Handle single email classification result
@@ -74,6 +75,14 @@ function App() {
     console.log('Feedback received:', feedbackData);
   };
 
+  /**
+   * Handle tab change and close mobile menu
+   */
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative">
       {/* Background glow effects */}
@@ -86,27 +95,27 @@ function App() {
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-50"></div>
-                <div className="relative p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-500 rounded-2xl shadow-xl">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="relative p-2 md:p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-500 rounded-2xl shadow-xl">
+                  <svg className="w-6 h-6 md:w-8 md:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold gradient-text">Mail-Shield</h1>
-                <p className="text-sm text-gray-400 font-medium">AI-Powered Email Classification</p>
+                <h1 className="text-lg md:text-2xl font-bold gradient-text">Mail-Shield</h1>
+                <p className="text-xs md:text-sm text-gray-400 font-medium hidden sm:block">AI-Powered Email Classification</p>
               </div>
             </div>
 
-            {/* Navigation Links */}
+            {/* Navigation Links - Desktop */}
             <div className="hidden md:flex items-center gap-2">
               <button
-                onClick={() => setActiveTab('classify')}
+                onClick={() => handleTabChange('classify')}
                 className={`nav-link ${activeTab === 'classify' ? 'nav-link-active' : ''}`}
               >
                 <div className="flex items-center gap-2">
@@ -117,7 +126,7 @@ function App() {
                 </div>
               </button>
               <button
-                onClick={() => setActiveTab('inbox')}
+                onClick={() => handleTabChange('inbox')}
                 className={`nav-link ${activeTab === 'inbox' ? 'nav-link-active' : ''}`}
               >
                 <div className="flex items-center gap-2">
@@ -128,7 +137,7 @@ function App() {
                 </div>
               </button>
               <button
-                onClick={() => setActiveTab('dashboard')}
+                onClick={() => handleTabChange('dashboard')}
                 className={`nav-link ${activeTab === 'dashboard' ? 'nav-link-active' : ''}`}
               >
                 <div className="flex items-center gap-2">
@@ -140,7 +149,7 @@ function App() {
               </button>
 
               <button
-                onClick={() => setActiveTab('about')}
+                onClick={() => handleTabChange('about')}
                 className={`nav-link ${activeTab === 'about' ? 'nav-link-active' : ''}`}
               >
                 <div className="flex items-center gap-2">
@@ -152,45 +161,134 @@ function App() {
               </button>
             </div>
 
-            {/* Stats badge */}
-            {results.length > 0 && (
-              <div className="flex items-center gap-3">
-                <div className="px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-500/30 shadow-lg shadow-purple-500/20">
-                  <span className="text-sm font-semibold text-purple-300">
-                    {results.length} emails processed
-                  </span>
+            {/* Stats badge and Mobile Menu Button */}
+            <div className="flex items-center gap-2 md:gap-3">
+              {results.length > 0 && (
+                <div className="hidden sm:flex items-center gap-2 md:gap-3">
+                  <div className="px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-500/30 shadow-lg shadow-purple-500/20">
+                    <span className="text-xs md:text-sm font-semibold text-purple-300">
+                      {results.length} emails
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleClearResults}
+                    className="p-1.5 md:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200"
+                    title="Clear results"
+                  >
+                    <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
                 </div>
-                <button
-                  onClick={handleClearResults}
-                  className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200"
-                  title="Clear results"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            )}
+              )}
+              
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+                title="Menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-white/10 animate-slide-up">
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => handleTabChange('classify')}
+                  className={`nav-link justify-start ${activeTab === 'classify' ? 'nav-link-active' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Classify
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleTabChange('inbox')}
+                  className={`nav-link justify-start ${activeTab === 'inbox' ? 'nav-link-active' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    Inbox
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleTabChange('dashboard')}
+                  className={`nav-link justify-start ${activeTab === 'dashboard' ? 'nav-link-active' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Dashboard
+                  </div>
+                </button>
+                <button
+                  onClick={() => handleTabChange('about')}
+                  className={`nav-link justify-start ${activeTab === 'about' ? 'nav-link-active' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    About
+                  </div>
+                </button>
+                
+                {/* Mobile Stats Badge */}
+                {results.length > 0 && (
+                  <div className="sm:hidden flex items-center justify-between mt-2 pt-2 border-t border-white/10">
+                    <div className="px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full border border-purple-500/30">
+                      <span className="text-sm font-semibold text-purple-300">
+                        {results.length} emails processed
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleClearResults}
+                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200"
+                      title="Clear results"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
       {/* Main content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full relative z-10">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 w-full relative z-10">
         {/* Alert messages */}
         {error && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 border-2 border-red-500/30 rounded-2xl flex items-center gap-4 animate-slide-up shadow-lg shadow-red-500/10 backdrop-blur-sm">
-            <div className="p-2 bg-red-500/20 rounded-xl">
-              <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mb-4 md:mb-6 p-3 md:p-4 bg-gradient-to-r from-red-500/10 to-rose-500/10 border-2 border-red-500/30 rounded-2xl flex items-start md:items-center gap-3 md:gap-4 animate-slide-up shadow-lg shadow-red-500/10 backdrop-blur-sm">
+            <div className="p-1.5 md:p-2 bg-red-500/20 rounded-xl flex-shrink-0">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span className="text-red-300 font-medium flex-1">{error}</span>
+            <span className="text-red-300 font-medium flex-1 text-sm md:text-base">{error}</span>
             <button 
               onClick={() => setError(null)}
-              className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all"
+              className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all flex-shrink-0"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -198,20 +296,20 @@ function App() {
         )}
 
         {success && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-emerald-500/10 to-green-500/10 border-2 border-emerald-500/30 rounded-2xl flex items-center gap-4 animate-slide-up shadow-lg shadow-emerald-500/10 backdrop-blur-sm">
-            <div className="p-2 bg-emerald-500/20 rounded-xl">
-              <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mb-4 md:mb-6 p-3 md:p-4 bg-gradient-to-r from-emerald-500/10 to-green-500/10 border-2 border-emerald-500/30 rounded-2xl flex items-start md:items-center gap-3 md:gap-4 animate-slide-up shadow-lg shadow-emerald-500/10 backdrop-blur-sm">
+            <div className="p-1.5 md:p-2 bg-emerald-500/20 rounded-xl flex-shrink-0">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <span className="text-emerald-300 font-medium flex-1">{success}</span>
+            <span className="text-emerald-300 font-medium flex-1 text-sm md:text-base">{success}</span>
           </div>
         )}
 
         {/* Tab content */}
         <div className="animate-fade-in">
           {activeTab === 'classify' && (
-            <div className="space-y-8">
+            <div className="space-y-6 md:space-y-8">
               {/* Hero Section with Image */}
               <HeroSection />
               
@@ -234,21 +332,21 @@ function App() {
               {results.length > 0 ? (
                 <ResultsTable results={results} />
               ) : (
-                <div className="card-gradient text-center py-16">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl flex items-center justify-center animate-float border border-purple-500/30">
-                    <svg className="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="card-gradient text-center py-8 md:py-16">
+                  <div className="w-16 h-16 md:w-24 md:h-24 mx-auto mb-4 md:mb-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl flex items-center justify-center animate-float border border-purple-500/30">
+                    <svg className="w-8 h-8 md:w-12 md:h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-200 mb-2">No Results Yet</h3>
-                  <p className="text-gray-400 max-w-sm mx-auto">Start by analyzing an email or uploading a CSV file to see classification results here</p>
+                  <h3 className="text-lg md:text-xl font-bold text-gray-200 mb-2">No Results Yet</h3>
+                  <p className="text-gray-400 max-w-sm mx-auto text-sm md:text-base">Start by analyzing an email or uploading a CSV file to see classification results here</p>
                 </div>
               )}
             </div>
           )}
 
           {activeTab === 'inbox' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
               <Inbox 
                 onClassify={handleInboxClassify} 
                 onError={handleError} 
@@ -257,14 +355,14 @@ function App() {
                 {results.length > 0 ? (
                   <ResultsTable results={results} title="Recent Classifications" />
                 ) : (
-                  <div className="card-gradient text-center py-16">
-                    <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl flex items-center justify-center animate-float border border-purple-500/30">
-                      <svg className="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="card-gradient text-center py-8 md:py-16">
+                    <div className="w-16 h-16 md:w-24 md:h-24 mx-auto mb-4 md:mb-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-3xl flex items-center justify-center animate-float border border-purple-500/30">
+                      <svg className="w-8 h-8 md:w-12 md:h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-200 mb-2">No Results Yet</h3>
-                    <p className="text-gray-400 max-w-sm mx-auto">Click an email in the inbox to classify it and see results here</p>
+                    <h3 className="text-lg md:text-xl font-bold text-gray-200 mb-2">No Results Yet</h3>
+                    <p className="text-gray-400 max-w-sm mx-auto text-sm md:text-base">Click an email in the inbox to classify it and see results here</p>
                   </div>
                 )}
               </div>
@@ -289,8 +387,8 @@ function App() {
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-[#0f172a] via-[#1e1b4b] to-[#0f172a] text-white mt-auto relative z-10 border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {/* Brand */}
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -330,13 +428,13 @@ function App() {
           </div>
 
           {/* Bottom bar */}
-          <div className="mt-10 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-400 text-sm">
               © 2026 All rights reserved. ❤️ Tech-Yodha.
             </p>
-            <div className="flex items-center gap-6 text-sm text-gray-400">
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-gray-400">
               <button
-                onClick={() => setActiveTab('feedback')}
+                onClick={() => handleTabChange('feedback')}
                 className="flex items-center gap-2 hover:text-purple-400 transition-colors duration-300"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

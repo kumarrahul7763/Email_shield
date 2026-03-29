@@ -55,25 +55,25 @@ const ResultsTable = ({ results, title = "Classification Results" }) => {
 
   return (
     <div className="card-gradient animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div className="relative">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 md:mb-6">
+        <div className="flex items-center gap-3 md:gap-4">
+          <div className="relative flex-shrink-0">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-lg opacity-30"></div>
-            <div className="relative p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 rounded-2xl shadow-lg">
-              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="relative p-2.5 md:p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 rounded-2xl shadow-lg">
+              <svg className="w-5 h-5 md:w-7 md:h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-200">{title}</h2>
-            <p className="text-gray-400 mt-1">{results.length} email{results.length !== 1 ? 's' : ''} classified</p>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-200">{title}</h2>
+            <p className="text-gray-400 mt-0.5 md:mt-1 text-sm md:text-base">{results.length} email{results.length !== 1 ? 's' : ''} classified</p>
           </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-white/10 shadow-sm">
+      {/* Table - Desktop */}
+      <div className="hidden md:block overflow-hidden rounded-2xl border border-white/10 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -165,7 +165,7 @@ const ResultsTable = ({ results, title = "Classification Results" }) => {
                   {/* Expanded explanation row */}
                   {expandedRow === index && result.explanation && (
                     <tr>
-                      <td colSpan="6" className="p-0">
+                      <td colSpan="7" className="p-0">
                         <div className="px-5 pb-5 animate-slide-up">
                           <ExplanationCard 
                             explanation={result.explanation}
@@ -185,30 +185,118 @@ const ResultsTable = ({ results, title = "Classification Results" }) => {
         </div>
       </div>
 
-      {/* Summary stats */}
-      <div className="mt-8 pt-6 border-t border-white/10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl border border-white/10">
-            <p className="text-3xl font-bold gradient-text">{results.length}</p>
-            <p className="text-sm text-gray-400 mt-1">Total Emails</p>
+      {/* Cards - Mobile */}
+      <div className="md:hidden space-y-4">
+        {results.map((result, index) => (
+          <div 
+            key={result.id || index}
+            className="bg-white/5 rounded-xl border border-white/10 overflow-hidden"
+          >
+            <div 
+              className="p-4 cursor-pointer"
+              onClick={() => toggleRowExpansion(index)}
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-200 font-medium line-clamp-2">
+                    {result.originalEmail || result.text || 'N/A'}
+                  </p>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleRowExpansion(index);
+                  }}
+                  className="p-1.5 text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 rounded-lg transition-all duration-200 flex-shrink-0"
+                >
+                  <svg 
+                    className={`w-4 h-4 transition-transform duration-200 ${expandedRow === index ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mb-3">
+                <span className={`badge text-xs ${getCategoryBadge(result.category)}`}>
+                  {result.category}
+                </span>
+                <span className={`badge text-xs ${getPriorityBadge(result.priority)}`}>
+                  {result.priority}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span className="text-gray-500">Department:</span>
+                  <span className="text-gray-300 ml-1">{result.department}</span>
+                </div>
+                {result.confidence !== undefined && (
+                  <div>
+                    <span className="text-gray-500">Confidence:</span>
+                    <span className="text-gray-300 ml-1">{result.confidence}%</span>
+                  </div>
+                )}
+                {result.action && (
+                  <div className="col-span-2">
+                    <span className="text-gray-500">Action:</span>
+                    <span className="text-gray-300 ml-1">{result.action}</span>
+                  </div>
+                )}
+              </div>
+              
+              {result.reply && (
+                <div className="mt-3 pt-3 border-t border-white/5">
+                  <p className="text-xs text-gray-400">
+                    <span className="font-semibold text-purple-400">Reply:</span> {truncateText(result.reply, 100)}
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {/* Expanded explanation */}
+            {expandedRow === index && result.explanation && (
+              <div className="px-4 pb-4 animate-slide-up">
+                <ExplanationCard 
+                  explanation={result.explanation}
+                  category={result.category}
+                  priority={result.priority}
+                  confidence={result.confidence}
+                  action={result.action}
+                />
+              </div>
+            )}
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-xl border border-emerald-500/20">
-            <p className="text-3xl font-bold text-emerald-400">
+        ))}
+      </div>
+
+      {/* Summary stats */}
+      <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-white/10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="text-center p-3 md:p-4 bg-gradient-to-br from-white/5 to-white/[0.02] rounded-xl border border-white/10">
+            <p className="text-2xl md:text-3xl font-bold gradient-text">{results.length}</p>
+            <p className="text-xs md:text-sm text-gray-400 mt-1">Total Emails</p>
+          </div>
+          <div className="text-center p-3 md:p-4 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-xl border border-emerald-500/20">
+            <p className="text-2xl md:text-3xl font-bold text-emerald-400">
               {results.filter(r => r.category === 'Finance').length}
             </p>
-            <p className="text-sm text-gray-400 mt-1">Finance</p>
+            <p className="text-xs md:text-sm text-gray-400 mt-1">Finance</p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl border border-blue-500/20">
-            <p className="text-3xl font-bold text-blue-400">
+          <div className="text-center p-3 md:p-4 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-xl border border-blue-500/20">
+            <p className="text-2xl md:text-3xl font-bold text-blue-400">
               {results.filter(r => r.category === 'Technical').length}
             </p>
-            <p className="text-sm text-gray-400 mt-1">Technical</p>
+            <p className="text-xs md:text-sm text-gray-400 mt-1">Technical</p>
           </div>
-          <div className="text-center p-4 bg-gradient-to-br from-red-500/10 to-rose-500/10 rounded-xl border border-red-500/20">
-            <p className="text-3xl font-bold text-red-400">
+          <div className="text-center p-3 md:p-4 bg-gradient-to-br from-red-500/10 to-rose-500/10 rounded-xl border border-red-500/20">
+            <p className="text-2xl md:text-3xl font-bold text-red-400">
               {results.filter(r => r.priority === 'High').length}
             </p>
-            <p className="text-sm text-gray-400 mt-1">High Priority</p>
+            <p className="text-xs md:text-sm text-gray-400 mt-1">High Priority</p>
           </div>
         </div>
       </div>
